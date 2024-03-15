@@ -7,18 +7,17 @@ import { useContext, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {loadStripe} from "@stripe/stripe-js"
+import { loadStripe } from "@stripe/stripe-js";
 
-const Reserve = ({ setOpen, hotelId ,cost,NumOfRoom}) => {
+const Reserve = ({ setOpen, hotelId, cost, NumOfRoom }) => {
   // const Reserve = (props) => {
-    // console.log("props:", props)
+  // console.log("props:", props)
   const [selectedRooms, setSelectedRooms] = useState([]);
   const { data, loading, error } = useFetch(`/hotels/room/${hotelId}`);
   const { dates } = useContext(SearchContext);
 
-
-  console.log("Total cost:",cost);
-  console.log("total rooms",NumOfRoom);
+  console.log("Total cost:", cost);
+  console.log("total rooms", NumOfRoom);
   const getDatesInRange = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -58,7 +57,7 @@ const Reserve = ({ setOpen, hotelId ,cost,NumOfRoom}) => {
   const handleSelect = (e) => {
     const checked = e.target.checked;
     const value = e.target.value;
-  
+
     if (checked) {
       // Check if the maximum limit has been reached
       if (selectedRooms.length < NumOfRoom) {
@@ -72,7 +71,6 @@ const Reserve = ({ setOpen, hotelId ,cost,NumOfRoom}) => {
       setSelectedRooms(selectedRooms.filter((item) => item !== value));
     }
   };
-  
 
   const navigate = useNavigate();
 
@@ -86,27 +84,50 @@ const Reserve = ({ setOpen, hotelId ,cost,NumOfRoom}) => {
           return res.data;
         })
       );
-     
+
       await makePayment();
 
-      
       console.log("booked");
-       setOpen(false);
-       //navigate("/");
+      setOpen(false);
+      //navigate("/");
     } catch (err) {}
   };
 
+  const det = [cost, NumOfRoom];
+
   const makePayment = async () => {
-    try {
-        // Your payment logic goes here
-        console.log("in payment")
-    } catch (error) {
-        console.error("Payment error:", error);
-        throw error;
+    console.log("in payment");
+    // Your payment logic goes here
+    const stripe = await loadStripe(
+      'pk_test_51OtSOoSDHdZXOJFs5kO2CtFowcVmP6WMpV0M2R2UzOhkv7jd5bpS8JeiGFaIBtTvzc0F0gutcYWyJt0OYtrqE9WM00P33RiUn7'
+    );
+
+    console.log("loaded stripe")
+    const body = {
+      products: det,
+    };
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    const response = await fetch(
+      "http://localhost:8800/api/stripe/create-checkout-session",
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(body),
+      }
+    );
+
+    const session = await response.json();
+
+    const result = stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (result.error) {
+      console.log(result.error);
     }
-};
-
-
+  };
 
   return (
     <div className="reserve">

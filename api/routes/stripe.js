@@ -9,35 +9,58 @@ dotenv.config()
 
 const stripeClient = stripe(process.env.STRIPE_SECRET);
 
-router.post('/create-payment-intent', async (req, res) => {
-  try {
-    // Create a Stripe Checkout session
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'Hotel',
-                description: 'Description of your product',
-              },
-              unit_amount: 2000, // Amount in cents (e.g., $20.00)
-            },
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: '', // Redirect URL after successful payment
-        cancel_url: '', // Redirect URL if user cancels payment
-      });
+router.post('/create-checkout-session', async (req, res) => {
+  const {products}=req.body;
   
-      // Redirect the user to the Stripe Checkout page
-      res.redirect(303, session.url);
-    } catch (error) {
-      console.error('Error initiating payment:', error);
-      res.status(500).send('Error initiating payment');
-    }
+//   console.log(products)
+   const price = products[0]; 
+ const qnty = products[1]; 
+// console.log(price)
+//  console.log(quantity)
+
+
+//   const lineItems = products.map((product)=>({
+//     price_data:{
+//         currency:"inr",
+//         product_data:{
+//             name:'Payment for Hotel Booking',
+           
+//         },
+//         unit_amount:price * 100,
+//     },
+//      quantity:1
+// }));
+
+const lineItems = [{
+  price_data: {
+    currency: "inr",
+    product_data: {
+      name: 'Payment for Hotel Booking',
+    },
+    unit_amount: price * 100, // Assuming price is a property of the product
+  },
+  quantity: 1
+}];
+
+
+  const session = await stripeClient.checkout.sessions.create({
+
+    payment_method_types:["card"],
+    line_items:lineItems,
+    mode:"payment",
+    success_url:"http://localhost:3000/success",
+    cancel_url:"http://localhost:3000/cancel",
+    customer_email: 'customer@example.com', // Provide customer email
+  billing_address_collection: 'required', // Require billing address
+  shipping_address_collection: {
+    allowed_countries: ['US'], // Allow shipping to India
+  },
+  });
+
+
+  res.json({id:session.id})
+
+  
 });
 
 export default router;
