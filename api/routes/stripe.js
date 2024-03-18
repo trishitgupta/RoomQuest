@@ -50,11 +50,11 @@ const lineItems = [{
     mode:"payment",
     success_url:"http://localhost:3000/success",
     cancel_url:"http://localhost:3000/cancel",
-    customer_email: 'customer@example.com', // Provide customer email
-  billing_address_collection: 'required', // Require billing address
-  shipping_address_collection: {
-    allowed_countries: ['US'], // Allow shipping to India
-  },
+    //customer_email: 'customer@example.com', // Provide customer email
+  // billing_address_collection: 'required', // Require billing address
+  // shipping_address_collection: {
+  //   allowed_countries: ['US'], // Allow shipping to India
+  //},
   });
 
 

@@ -23,6 +23,9 @@ router.put("/:id",verifyUser,updateUser);
     router.get("/",verifyAdmin,getUsers);
 
 
+   // router.post("/deleteUser/:imageId", deleteFromS3);
+
+
 
 
 export default router

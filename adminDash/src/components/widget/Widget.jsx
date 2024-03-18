@@ -3,9 +3,12 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import StoreIcon from '@mui/icons-material/Store';
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import PeopleAltSharpIcon from '@mui/icons-material/PeopleAltSharp';
+import ApartmentIcon from '@mui/icons-material/Apartment';
 import { Link } from 'react-router-dom';
+
 const Widget = ({ type }) => {
   let data;
 
@@ -20,7 +23,7 @@ const Widget = ({ type }) => {
         isMoney: false,
         logo:<PeopleAltSharpIcon/>,
         link: (
-          <Link to="/users" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link to="/users" style={{ textDecoration: 'none', color: 'inherit',fontWeight:'600' }}>
             See all users
           </Link>
         ),
@@ -39,18 +42,18 @@ const Widget = ({ type }) => {
       data = {
         title: "HOTELS",
         isMoney: false,
-        logo:<PeopleAltSharpIcon/>,
+        logo:<StoreIcon/>,
         link: (
-          <Link to="/users" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link to="/users" style={{ textDecoration: 'none', color: 'inherit' ,fontWeight:'600'}}>
             See all Hotels
           </Link>
         ),
         icon: (
-          <ShoppingCartOutlinedIcon
+          <StoreIcon
             className="icon"
             style={{
               backgroundColor: "rgba(218, 165, 32, 0.2)",
-              color: "goldenrod",
+              color: "blue",
             }}
           />
         ),
@@ -60,14 +63,14 @@ const Widget = ({ type }) => {
       data = {
         title: "ROOMS",
         isMoney: true,
-        logo:<PeopleAltSharpIcon/>,
+        logo:<ApartmentIcon/>,
         link: (
-          <Link to="/rooms" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <Link to="/rooms" style={{ textDecoration: 'none', color: 'inherit', fontWeight:'600' }}>
             See all Rooms
           </Link>
         ),
         icon: (
-          <MonetizationOnOutlinedIcon
+          <ApartmentIcon
             className="icon"
             style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
           />

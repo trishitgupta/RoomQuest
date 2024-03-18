@@ -29,10 +29,12 @@ const AuthReducer = (state, action) => {
         error: action.payload,
       };
     case "LOGOUT":
+      document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       return {
         user: null,
         loading: false,
         error: null,
+        
       };
     default:
       return state;
@@ -45,6 +47,8 @@ export const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(state.user));
   }, [state.user]);
+
+  console.log(state.user)
 
   return (
     <AuthContext.Provider

@@ -13,15 +13,25 @@ import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import { Link } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
+import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const Sidebar = () => {
   const { dispatch } = useContext(DarkModeContext);
+  const { dispatch: authDispatch } = useContext(AuthContext);
+  const navigate = useNavigate()
+  const handleLogout=()=>{
+    authDispatch({type:"LOGOUT"})
+    // navigate("/login");
+  
+  }
   return (
     <div className="sidebar">
       <div className="top">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">ADMIN</span>
+          <span className="logo">RoomQuest ADMIN</span>
         </Link>
       </div>
       <hr />
@@ -72,7 +82,7 @@ const Sidebar = () => {
             <AccountCircleOutlinedIcon className="icon" />
             <span>Profile</span>
           </li> */}
-          <li>
+          <li onClick={handleLogout}> 
             <ExitToAppIcon className="icon" />
             <span>Logout</span>
           </li>

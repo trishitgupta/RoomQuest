@@ -96,6 +96,26 @@ export const getHotels = async (req, res, next) => {
   }
 };
 
+//gethotels with ATLAS SEARCH
+// export const getHotels = async (req, res, next) =>{
+//   try {
+//     console.log(req.query);
+//     const { city} = req.query; // Get the city query parameter from the request
+
+//     // Use Atlas search to search for hotels based on the city
+//     const hotels = await Hotel.find(
+//       { $text: { $search: city, $caseSensitive: false, $diacriticSensitive: false }}, 
+//       { score: { $meta: "textScore" } } // Include text score for ranking
+//       ).sort({ score: { $meta: "textScore" } }); // Sort by text score);
+      
+
+//     res.json(hotels); // Send the found hotels as JSON response
+//   } catch (error) {
+//     next(error); // Pass any errors to the error handling middleware
+//   }
+// };
+
+
 
 export const countByCity = async (req, res, next) => {
   const cities = req.query.cities.split(",");

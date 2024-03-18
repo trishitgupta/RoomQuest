@@ -46,7 +46,7 @@ const Login = () => {
   return (
     <div className="login">
       <div className="lContainer">
-        <h1>Login</h1>
+        <h1> Admin Login</h1>
         <input
           type="text"
           placeholder="username"
@@ -62,11 +62,11 @@ const Login = () => {
           className="lInput"
         />
         <button disabled={loading} onClick={handleClick} className="lButton">
-          Login
+           Login
         </button>
-        <button disabled={loading} onClick={handleReg} className="rButton">
+        {/* <button disabled={loading} onClick={handleReg} className="rButton">
           Register
-        </button>
+        </button> */}
         {error && <span>{error.message}</span>}
       </div>
     </div>

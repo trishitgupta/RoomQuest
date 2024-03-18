@@ -56,6 +56,7 @@ const HotelSchema=new mongoose.Schema(
 
 
     }
-);
 
+);
+HotelSchema.index({city:'text',name:'text',type:'text',address:'text'});
 export default mongoose.model("Hotel",HotelSchema);

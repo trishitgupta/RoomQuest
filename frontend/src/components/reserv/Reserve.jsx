@@ -76,7 +76,10 @@ const Reserve = ({ setOpen, hotelId, cost, NumOfRoom }) => {
 
   const handleClick = async () => {
     try {
-      await Promise.all(
+
+     await makePayment();
+
+ await Promise.all(
         selectedRooms.map((roomId) => {
           const res = axios.put(`/rooms/availability/${roomId}`, {
             dates: alldates,
@@ -85,7 +88,10 @@ const Reserve = ({ setOpen, hotelId, cost, NumOfRoom }) => {
         })
       );
 
-      await makePayment();
+      
+     
+
+      
 
       console.log("booked");
       setOpen(false);
@@ -105,6 +111,7 @@ const Reserve = ({ setOpen, hotelId, cost, NumOfRoom }) => {
     console.log("loaded stripe")
     const body = {
       products: det,
+      
     };
     const headers = {
       "Content-Type": "application/json",
@@ -124,9 +131,14 @@ const Reserve = ({ setOpen, hotelId, cost, NumOfRoom }) => {
       sessionId: session.id,
     });
 
+    console.log(result);
+
     if (result.error) {
+      console.log("no mapping");
       console.log(result.error);
     }
+    
+    
   };
 
   return (

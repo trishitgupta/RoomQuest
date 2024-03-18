@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import "./login.css";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -35,6 +36,10 @@ const Login = () => {
     navigate("/register");
   };
 
+  const handleAdmin=()=>{
+    //navigate("http://localhost:3001/login");
+  }
+
 
   return (
     <div className="login">
@@ -59,6 +64,10 @@ const Login = () => {
         </button>
         <button disabled={loading} onClick={handleReg} className="rButton">
           Register
+        </button>
+        <button disabled={loading} onClick={handleAdmin} className="rButton">
+        <Link to="http://localhost:3001/login" className="btn btn-primary"> Login as Admin</Link>
+         
         </button>
         {error && <span>{error.message}</span>}
       </div>
