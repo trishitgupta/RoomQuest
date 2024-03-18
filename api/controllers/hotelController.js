@@ -25,8 +25,32 @@ export const updateHotel = async (req, res, next) => {
   }
 };
 
+
+
 export const deleteHotel = async (req, res, next) => {
   try {
+
+    const hotel = await Hotel.findById(req.params.id);
+    console.log(hotel)
+    if (!hotel) {
+      return res.status(404).json({ error: "Hotel not found" });
+    }
+
+    // Extract S3 URLs from the user document
+    const imageUrls = hotel.photos; // Change 'img' to the actual field name in your schema
+
+    console.log(imageUrls)
+
+    // Delete each S3 object associated with the user
+    deleteFromS3Array(imageUrls);
+
+    
+    console.log("after delete");
+
+
+
+
+
     await Hotel.findByIdAndDelete(req.params.id);
     res.status(200).json("Hotel has been deleted");
   } catch (err) {
@@ -220,5 +244,34 @@ export const getAllHotelsForTable = async (req, res, next) => {
     res.status(200).json(hotel);
   } catch (err) {
     next(err);
+  }
+};// not needed
+
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+const deleteFromS3Array = async (imageUrls) => {
+  try {
+    const s3Client = new S3Client({
+      region: "ap-south-1",
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+      },
+    });
+
+    const bucketName = process.env.BUCKET_NAME;
+
+    for (const imageUrl of imageUrls) {
+      const key = imageUrl.split('/').pop();
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      });
+      await s3Client.send(deleteCommand);
+    }
+
+    return { message: 'Images deleted from S3' };
+  } catch (error) {
+    console.error('Error deleting images from S3:', error);
+    throw error;
   }
 };
