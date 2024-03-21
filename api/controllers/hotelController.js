@@ -93,21 +93,31 @@ export const getHotel = async (req, res, next) => {
 
 
 export const getHotels = async (req, res, next) => {
+  console.log(req.query);
   const { limit, min, max, ...others } = req.query;
-
+console.log(max,min);
   const limitValue = parseInt(limit, 10);
   let conditions = {};
 
   if (Object.keys(others).length > 0) {
     conditions = {
       ...others,
-      cheapestPrice: { $gt: min | 1, $lt: max || 999 },
+      cheapestPrice: { $gt: min | 0, $lt:max ||100000000   },
     };
   }
+  //console.log(conditions);
+  console.log(others.city)
+  if (others.city) {
+    // Case-insensitive search for city name
+    conditions.city = { $regex: new RegExp(others.city, 'i') };
+  }
+  console.log("conditions",conditions);
 
   try {
+    
     let query = Hotel.find(conditions);
     
+    console.log("limit",limitValue)
     if (limitValue) {
       query = query.limit(limitValue);
     }
@@ -166,15 +176,27 @@ export const countByType = async (req, res, next) => {
 
     res.status(200).json([
       { type: "hotel", count: hotelCount },
-      { type: "apartments", count: apartmentCount },
-      { type: "resorts", count: resortCount },
-      { type: "villas", count: villaCount },
-      { type: "cabins", count: cabinCount },
+      { type: "apartment", count: apartmentCount },
+      { type: "resort", count: resortCount },
+      { type: "villa", count: villaCount },
+      { type: "cabin", count: cabinCount },
     ]);
   } catch (err) {
     next(err);
   }
 };
+
+
+
+
+export const findFeatured = async (req, res, next) => {
+
+
+}
+    
+
+
+
 
 export const getHotelRoom = async (req, res, next) => {
   try {

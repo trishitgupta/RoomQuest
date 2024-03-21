@@ -7,7 +7,8 @@ import hotelsRoute from "./routes/hotels.js"
 import roomsRoute from "./routes/rooms.js"
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import stripeRoute from "./routes/stripe.js"
+import stripeRoute from "./routes/stripe.js";
+import webhookRoute from "./routes/webhook.js";
 
 
 const app=express()
@@ -43,6 +44,7 @@ app.use("/api/users",usersRoute);
 app.use("/api/rooms",roomsRoute);
 app.use("/api/hotels",hotelsRoute);
 app.use("/api/stripe",stripeRoute)
+app.use("api/webhook",webhookRoute);
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;

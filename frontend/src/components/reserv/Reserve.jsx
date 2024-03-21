@@ -126,12 +126,15 @@ const Reserve = ({ setOpen, hotelId, cost, NumOfRoom }) => {
     );
 
     const session = await response.json();
+    const {id} =session;
+    console.log(`http://localhost:3000/checkout?sessionId=${id}`)
+    alert(`Checkout session created with ID: ${id}`);
 
     const result = stripe.redirectToCheckout({
       sessionId: session.id,
     });
 
-    console.log(result);
+    alert(result.status);
 
     if (result.error) {
       console.log("no mapping");
@@ -156,9 +159,9 @@ const Reserve = ({ setOpen, hotelId, cost, NumOfRoom }) => {
               <div className="rTitle">{item.title}</div>
               <div className="rDesc">{item.desc}</div>
               <div className="rMax">
-                Max people: <b>{item.maxPeople}</b>
+                {/* Max people: <b>{item.maxPeople}</b> */}
               </div>
-              <div className="rPrice">{item.price}</div>
+              {/* <div className="rPrice">{item.price}</div> */}
             </div>
             <div className="rSelectRooms">
               {item.roomNumbers.map((roomNumber) => (

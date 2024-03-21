@@ -3,7 +3,7 @@ import "./featuredProperties.css";
 import { useNavigate } from "react-router-dom";
 
 const FeaturedProperties = () => {
-  const { data, loading, error } = useFetch("/hotels?featured=true&limit=4");
+  const { data, loading, error } = useFetch("/hotels?featured=true&limit=6");
   const navigate=useNavigate();
 
   const handleClick=(id)=>{

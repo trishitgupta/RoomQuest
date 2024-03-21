@@ -3,6 +3,7 @@ import { createContext } from "react";
 
 const INITIAL_STATE={
     city:undefined,
+    type:undefined,
     dates:[],
     options:{
         adult:undefined,
@@ -33,6 +34,7 @@ export const SearchContextProvider=({children})=>{
         <SearchContext.Provider 
         value={{
             city:state.city,
+            type:state.type,
             dates:state.dates,
             options:state.options,
             dispatch,

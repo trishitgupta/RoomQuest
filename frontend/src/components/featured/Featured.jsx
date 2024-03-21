@@ -3,11 +3,12 @@ import useFetch from "../../hooks/useFetch.js";
 import { useNavigate } from "react-router-dom";
 import { useState, useContext } from "react";
 import { SearchContext } from "../../context/SearchContext";
+
 const Featured = () => {
   const navigate = useNavigate();
 
   const { data, loading, error } = useFetch(
-    "hotels/countByCity?cities=mumbai,kolkata,delhi"
+    "hotels/countByCity?cities=mumbai,New York,delhi"
   );
   //console.log(data);
   const { dispatch } = useContext(SearchContext);
@@ -66,11 +67,11 @@ const Featured = () => {
               alt=""
               className="featuredImg"
               onClick={() => {
-                handleDestination("kolkata");
+                handleDestination("New York");
               }}
             />
             <div className="featuredTitles">
-              <h1>Kolkata</h1>
+              <h1>New York</h1>
               <h2>{data[1]} properties</h2>
             </div>
           </div>

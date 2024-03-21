@@ -12,14 +12,35 @@ import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 const List = () => {
   const location = useLocation();
-  const [destination, setDestination] = useState(location?.state?.destination );
+  const [destination, setDestination] = useState(location?.state?.destination  );
   const [dates, setDates] = useState(location?.state?.dates);
   const [openDate, setOpenDate] = useState(false);
   const [options, setOptions] = useState(location?.state?.options);
   const [min, setMin] = useState(undefined);
   const [max, setMax] = useState(undefined);
+  const [type,setType]=useState(location?.state?.type)
 
-const{data,loading,error,refetch}=useFetch(`/hotels?city=${destination}&min=${min|| 0}&max=${max|| 999}`)
+  console.log("from LIST",type);
+
+//const{data,loading,error,refetch}=useFetch(`/hotels?city=${destination}&min=${min|| 0}&max=${max|| 999999}`)
+
+
+const destinationQueryParam = destination ? `&city=${destination}` : '';
+const typeQueryParam = type ? `&type=${type}` : '';
+const minQueryParam = min ? `&min=${min}` : '';
+const maxQueryParam = max ? `&max=${max}` : '';
+
+console.log(typeQueryParam);
+console.log(destinationQueryParam);
+console.log(minQueryParam);
+console.log(maxQueryParam);
+
+
+
+const queryString = `?${destinationQueryParam}${typeQueryParam}${minQueryParam}${maxQueryParam}`;
+console.log(queryString)
+
+const { data, loading, error, refetch } = useFetch(`/hotels${queryString}`);
 
 const navigate = useNavigate();
 const {dispatch}=useContext(SearchContext);
