@@ -11,7 +11,7 @@ import stripeRoute from "./routes/stripe.js";
 import webhookRoute from "./routes/webhook.js";
 
 
-const app=express()
+ const app=express();
 dotenv.config()
 
 const connect=async()=>{
@@ -62,3 +62,7 @@ app.listen(8800,()=>{
     connect();
     console.log("connected to backend.")
 })
+
+
+export default app;
+// module.exports=app;

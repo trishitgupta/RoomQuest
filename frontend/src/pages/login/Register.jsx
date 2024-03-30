@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./register.css";
+import { toast } from "sonner";
 
 const Register = () => {
   const [userCredentials, setUserCredentials] = useState({
@@ -30,13 +31,18 @@ const Register = () => {
       const res = await axios.post("/auth/register", userCredentials);
       // Handle success
       setLoading(false);
+      toast.success("Register successful")
       navigate("/login");
+
     } catch (err) {
       // Handle failure
       setLoading(false);
+      toast.error("Register failed")
       setError(err.response.data.message);
     }
   };
+
+  
 
   return (
     <div className="register">
@@ -57,7 +63,7 @@ const Register = () => {
           className="rInput"
         />
         <input
-          type="text"
+          type="email"
           placeholder="Email"
           id="email"
           onChange={handleChange}

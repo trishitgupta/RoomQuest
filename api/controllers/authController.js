@@ -3,6 +3,18 @@ import bcrypt from "bcryptjs";
 import { createError } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
+export const testing=async(req,res,next)=>{
+  try {
+    // Sample logic to test
+    const result = 2 + 2;
+
+    // Send the result as a response
+    res.status(200).json({ result });
+  } catch (error) {
+    // Handle errors
+    next(error);
+  }
+}
 
 export const register=async(req,res,next)=>{
     console.log("Inside register");
@@ -34,13 +46,19 @@ export const register=async(req,res,next)=>{
 export const login=async(req,res,next)=>{
     try{
         const user= await User.findOne({username:req.body.username})
+        // console.log(user);
         if(!user) return next(createError(404,"User not found"))
 
         const isPasswordCorrect= await bcrypt.compare(req.body.password,user.password);
+        console.log(isPasswordCorrect)
 
         if(!isPasswordCorrect) return next(createError(400,"bad req-wrong password/username"));
 
         const token=jwt.sign({id:user._id,isAdmin:user.isAdmin},process.env.JWT);
+
+        console.log(token);
+        
+
 
         const{password,isAdmin, ...otherDetails}=user._doc;
 

@@ -15,6 +15,10 @@ const Navbar = () => {
     
     dispatch({type:"LOGOUT"})
   }
+
+  const handleReg=()=>{
+    navigate("/register")
+  }
   return (
     <div className="navbar">
       <div className="navContainer">
@@ -30,7 +34,7 @@ const Navbar = () => {
           </div>
         )  :(
           <div className="navItems">
-            <button className="navButton">Register</button>
+            <button className="navButton" onClick={handleReg}>Register</button>
             <button className="navButton" onClick={handleLogin}>Login</button>
           </div>
         )}

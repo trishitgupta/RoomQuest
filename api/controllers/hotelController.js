@@ -116,13 +116,14 @@ console.log(max,min);
   try {
     
     let query = Hotel.find(conditions);
-    
+    // console.log(query)
     console.log("limit",limitValue)
     if (limitValue) {
       query = query.limit(limitValue);
     }
 
     const hotels = await query.exec();
+   
 
     res.status(200).json(hotels);
   } catch (err) {
@@ -260,14 +261,14 @@ export const uploads3 = async (req, res, next) => {
   }
 };
 
-export const getAllHotelsForTable = async (req, res, next) => {
-  try {
-    const hotel = await Hotel.find();
-    res.status(200).json(hotel);
-  } catch (err) {
-    next(err);
-  }
-};// not needed
+// export const getAllHotelsForTable = async (req, res, next) => {
+//   try {
+//     const hotel = await Hotel.find();
+//     res.status(200).json(hotel);
+//   } catch (err) {
+//     next(err);
+//   }
+// };// not needed
 
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 const deleteFromS3Array = async (imageUrls) => {

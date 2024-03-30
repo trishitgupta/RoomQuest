@@ -43,7 +43,7 @@ const New = ({ inputs, title }) => {
 
     try {
       const uploadRes = await axios.post(
-        "/auth/upload",
+        "https://roomquest-backend.onrender.com/api/auth/upload",
         data
       );
 

@@ -54,6 +54,7 @@ const NewHotel = () => {
         photos: uploadRes.data,
       };
 
+      console.log(newhotel);
       
 
       const res= await axios.post("/hotels", newhotel);
