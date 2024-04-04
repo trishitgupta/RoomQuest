@@ -17,7 +17,7 @@ const Navbar = () => {
   }
 
   const handleReg=()=>{
-    navigate("/register")
+    navigate("/login")
   }
   return (
     <div className="navbar">

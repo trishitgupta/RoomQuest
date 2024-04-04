@@ -79,9 +79,9 @@ const Header = ({ type }) => {
             <h1 className="headerTitle">
              Book Your Hotels here!
             </h1>
-            <p className="headerDesc">
-             Lorem ipsum dolor sit amet.
-            </p>
+            <h4 className="headerDesc">
+            Welcome to your gateway to unforgettable stays! Book your dream hotel effortlessly with our intuitive platform.
+            </h4>
             {!user && <button className="headerBtn">Sign in / Register</button>}
           </div>
             <div className="headerSearch">

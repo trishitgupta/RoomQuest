@@ -9,7 +9,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import stripeRoute from "./routes/stripe.js";
 import webhookRoute from "./routes/webhook.js";
-
+import path from "path";
+import { GetBucketLifecycleConfigurationCommand } from '@aws-sdk/client-s3';
 
  const app=express();
 dotenv.config()
@@ -37,6 +38,9 @@ const connect=async()=>{
 //middleware
 app.use(cookieParser());
 app.use(express.json());
+const _dirname=path.dirname("")
+const buildpath=path.join(_dirname,"../frontend/build")
+app.use(express.static(buildpath));
 app.use(cors());
 
 app.use("/api/auth",authRoute);

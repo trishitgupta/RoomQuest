@@ -38,6 +38,22 @@ describe("User LogIn Routes", () => {
     sinon.restore();
   });
 
+  it('should handle user not found error and return status 404', async () => {
+    // Mock request parameters
+    const requestBody = { username: 'nonExistentUser', password: 'password123' };
+
+    // Stub the User.findOne method to return null, simulating user not found
+    findOneStub.resolves(null)
+
+    // Send POST request to the endpoint
+    const res = await chai.request(app)
+      .post('/api/auth/login')
+      .send(requestBody);
+
+    // Assert that the response status is 404
+    expect(res).to.have.status(404);
+  });
+
   it("should login a user and return a token and user details", async () => {
     const mockUser = {
       _doc: {
@@ -106,7 +122,23 @@ describe("User LogIn Routes", () => {
     expect(res).to.have.status(400);
   });
 
-  it("should give 500 when something unusual happens", async () => {});
+  it("should give 500 when something unusual happens", async () => {
+    // Mock request parameters
+    const requestBody = { username: 'existingUser', password: 'correctPassword' };
+
+    // Stub the User.findOne method to throw an error
+    findOneStub.throws("error"); // Simulating an error
+
+    // Send POST request to the endpoint
+    const res = await chai.request(app)
+      .post('/api/auth/login')
+      .send(requestBody);
+
+    // Assert that the response status is 500
+    expect(res).to.have.status(500);
+
+
+  });
 });
 
 
@@ -174,18 +206,25 @@ describe("Test cases while uploading to S3", () => {
     s3ClientStub.restore();
   });
  
-  // it("Should return statusCode 400 if no file is selected", (done) => {
-  //   chai
-  //     .request(app)
-  //     .post("/file/uploadFileToS3")
-  //     .set("Authorization", "Bearer mockedToken")
-  //     .send({})
-  //     .end((err, response) => {
-  //       expect(response).to.have.status(404);
-  //       expect(response.body.message).to.equal("File not found");
-  //       done();
-  //     });
-  // });
+  it("Should throw error if no file is selected", async () => {
+    try {
+      const response = await chai
+        .request(app)
+        .post("/api/auth/upload")
+        .set("Authorization", "Bearer mockedToken")
+        .end();
+  
+      if (response) {
+        expect(response.body.error).to.equal("File not found");
+        expect(response).to.have.status(500);
+      } else {
+        throw new Error("Response is undefined");
+      }
+    } catch (error) {
+      expect(error.message).to.equal("Response is undefined");
+    }
+  });
+  
  
   it("Should return statusCode 500 if there is error while sending file to S3", (done) => {
     const s3ClientStub = sinon

@@ -271,7 +271,7 @@ export const uploads3 = async (req, res, next) => {
 // };// not needed
 
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-const deleteFromS3Array = async (imageUrls) => {
+export const deleteFromS3Array = async (imageUrls) => {
   try {
     const s3Client = new S3Client({
       region: "ap-south-1",

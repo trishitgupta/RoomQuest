@@ -5,55 +5,193 @@ import app from "../index.js";
 import Hotel from "../models/Hotel.js"; // Adjust the path as per your file structure
 import Room from "../models/Room.js"; // Adjust the path as per your file structure
 import jwt from "jsonwebtoken";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand,DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { verifyAdmin, verifyToken } from "../utils/verifyToken.js";
+import{deleteFromS3Array} from '../controllers/hotelController.js'
+import chaiAsPromised from 'chai-as-promised';
 
 chai.use(chaiHttp);
 const expect = chai.expect;
 
-// describe('createHotel Route', () => {
-//     const verifyTokenStub = sinon.stub().callsFake((req, res, next, callback) => {
-//         // Simulate authentication by calling the callback without errors
-//         callback();
-//       });
+describe('createHotel Controller', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
 
-//       // In your beforeEach hook, replace the original verifyToken function with the stub
-//       beforeEach(() => {
+  it('should create a new hotel and return status 200', async () => {
+    // Mock request body
+    const requestBody = {
+      name: 'Hotel Name',
+      type: 'Hotel Type',
+      city: 'Hotel City',
+      address: 'Hotel Address',
+      distance: 'Hotel Distance',
+      photos: [],
+      title: 'Hotel Title',
+      desc: 'Hotel Description',
+      rating: 4.5,
+      rooms: ['Room 1', 'Room 2'],
+      cheapestPrice: 100,
+      featured: true
+    };
+    const token = 'mockedToken';
 
-//       });
+    // Stub jwt.verify method to call the callback with no error
+    const jwtVerifyStub = sinon.stub(jwt, 'verify').callsArgWith(2, null, { isAdmin: true });
 
-//       // In your afterEach hook, restore the original verifyToken function
-//       afterEach(() => {
-//         sinon.restore();
-//       });
+    // Stub the new Hotel instance
+    const saveStub = sinon.stub(Hotel.prototype, 'save').resolves(requestBody);
 
-//   it('should create a new hotel if user is admin', async () => {
-//     const mockHotel = {
-//         name: 'dummy1',
-//         type: 'villa',
-//         city: 'bangalore',
-//         address: 'SC',
-//         distance: '400'
-//     };
+    // Send POST request to the endpoint
+    const res = await chai.request(app)
+      .post('/api/hotels')
+      .set('Cookie', `access_token=${token}`)
+      .send(requestBody);
 
-//     // Simulate an admin user by modifying the req object
-//     const req = { user: { isAdmin: true } };
+    // Assert that the response status is 200
+    expect(res).to.have.status(200);
+    // Assert that the Hotel.save method was called with the correct parameters
+    expect(saveStub.calledOnceWith()).to.be.true;
+    // Assert that jwt.verify was called with the correct token
+    expect(jwtVerifyStub.calledOnceWith(token, process.env.JWT)).to.be.true;
+    // Assert that the response body contains the created hotel data
+    expect(res.body).to.eql(requestBody);
 
-//     // Send a POST request to the create hotel route with the modified req object
-//     const res = await chai.request(app)
-//       .post('/api/hotels')
-//       .set('Content-Type', 'application/json')
-//       .send(mockHotel)
-//       .set('Authorization', 'Bearer ' + jwt.sign(req.user, process.env.JWT));
+    // Restore the stubs
+    jwtVerifyStub.restore();
+  });
 
-//       console.log(res);
+  it('should handle errors and return status 500', async () => {
+    // Mock request body
+    const requestBody = {
+      name: 'Hotel Name',
+      type: 'Hotel Type',
+      city: 'Hotel City',
+      address: 'Hotel Address',
+      distance: 'Hotel Distance',
+      photos: [],
+      title: 'Hotel Title',
+      desc: 'Hotel Description',
+      rating: 4.5,
+      rooms: ['Room 1', 'Room 2'],
+      cheapestPrice: 100,
+      featured: true
+    };
+    const token = 'mockedToken';
 
-//     // Assert that the response status is 200 and contains the saved hotel data
-//     expect(res).to.have.status(401);
+    // Stub jwt.verify method to call the callback with no error
+    const jwtVerifyStub = sinon.stub(jwt, 'verify').callsArgWith(2, null, { isAdmin: true });
 
-// });
+    // Stub the new Hotel instance to throw an error
+    sinon.stub(Hotel.prototype, 'save').throws();
 
-// });
+    // Send POST request to the endpoint
+    const res = await chai.request(app)
+      .post('/api/hotels')
+      .set('Cookie', `access_token=${token}`)
+      .send(requestBody);
+
+    // Assert that the response status is 500
+    expect(res).to.have.status(500);
+
+    // Restore the stubs
+    jwtVerifyStub.restore();
+  });
+});
+
+
+
+describe('updateHotel Controller', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('should update the hotel and return status 200', async () => {
+    // Mock request parameters
+    const hotelId = 'hotelId123';
+    const updatedHotelData = {
+      name: 'Updated Hotel Name',
+      type: 'Updated Hotel Type',
+      city: 'Updated Hotel City',
+      address: 'Updated Hotel Address',
+      distance: 'Updated Hotel Distance',
+      photos: [],
+      title: 'Updated Hotel Title',
+      desc: 'Updated Hotel Description',
+      rating: 4.7,
+      rooms: ['Updated Room 1', 'Updated Room 2'],
+      cheapestPrice: 150,
+      featured: false
+    };
+    const token = 'mockedToken';
+
+    // Stub jwt.verify method to call the callback with no error
+    const jwtVerifyStub = sinon.stub(jwt, 'verify').callsArgWith(2, null, { isAdmin: true });
+
+    // Stub the Hotel.findByIdAndUpdate method to resolve with the updated hotel data
+    const findByIdAndUpdateStub = sinon.stub(Hotel, 'findByIdAndUpdate').resolves(updatedHotelData);
+
+    // Send PUT request to the endpoint
+    const res = await chai.request(app)
+      .put(`/api/hotels/${hotelId}`)
+      .set('Cookie', `access_token=${token}`)
+      .send(updatedHotelData);
+
+    // Assert that the response status is 200
+    expect(res).to.have.status(200);
+    // Assert that the Hotel.findByIdAndUpdate method was called with the correct parameters
+    expect(findByIdAndUpdateStub.calledOnceWith(
+      hotelId,
+      { $set: updatedHotelData },
+      { new: true }
+    )).to.be.true;
+    // Assert that jwt.verify was called with the correct token
+    expect(jwtVerifyStub.calledOnceWith(token, process.env.JWT)).to.be.true;
+    // Assert that the response body contains the updated hotel data
+    expect(res.body).to.eql(updatedHotelData);
+
+    // Restore the stubs
+    jwtVerifyStub.restore();
+  });
+
+  it('should handle errors and return status 500', async () => {
+    // Mock request parameters
+    const hotelId = 'hotelId123';
+    const updatedHotelData = {
+      name: 'Updated Hotel Name',
+      type: 'Updated Hotel Type',
+      city: 'Updated Hotel City',
+      address: 'Updated Hotel Address',
+      distance: 'Updated Hotel Distance',
+      photos: [],
+      title: 'Updated Hotel Title',
+      desc: 'Updated Hotel Description',
+      rating: 4.7,
+      rooms: ['Updated Room 1', 'Updated Room 2'],
+      cheapestPrice: 150,
+      featured: false
+    };
+    const token = 'mockedToken';
+
+    // Stub jwt.verify method to call the callback with no error
+    const jwtVerifyStub = sinon.stub(jwt, 'verify').callsArgWith(2, null, { isAdmin: true });
+
+    // Stub the Hotel.findByIdAndUpdate method to throw an error
+    sinon.stub(Hotel, 'findByIdAndUpdate').throws();
+
+    // Send PUT request to the endpoint
+    const res = await chai.request(app)
+      .put(`/api/hotels/${hotelId}`)
+      .set('Cookie', `access_token=${token}`)
+      .send(updatedHotelData);
+
+    // Assert that the response status is 500
+    expect(res).to.have.status(500);
+
+    // Restore the stubs
+    jwtVerifyStub.restore();
+  });
+});
 
 describe(" delete Hotel Routes", () => {
   let findByIdStub;
@@ -206,9 +344,11 @@ describe("getHotels  Routes", () => {
 
 describe("CountCity Routes", () => {
   let countDocumentsStub;
+  let findStub;
 
   beforeEach(() => {
     countDocumentsStub = sinon.stub(Hotel, "countDocuments");
+    findStub = sinon.stub(Hotel, "find");
   });
 
   afterEach(() => {
@@ -232,6 +372,31 @@ describe("CountCity Routes", () => {
 
     expect(res).to.have.status(200);
     expect(res.body).to.deep.equal(counts);
+  });
+
+
+  it("should return  error message when Hotel.find() throws an error", async () => {
+    const cities = ["Bangalore", "Mumbai", "New York"];
+    const counts = [10, 20, 30]; // Mock counts for each city
+
+    // Stub the countDocuments method to return the mock counts for each city
+    cities.forEach((city, index) => {
+      countDocumentsStub.withArgs({ city }).resolves(counts[index]);
+    });
+
+    // Stub the find method to throw an error
+    findStub.rejects(new Error());
+
+    // Make a GET request to the countByCity endpoint
+    const res = await chai
+      .request(app)
+      .get("/api/hotels/countByCity")
+      .query({ cities: cities.join(",") });
+
+    // Expect status 500 due to error in catch block
+    expect(res).to.have.status(500);
+    // Expect the response body to contain the expected error message
+    expect(res.body.error).to.equal();
   });
 });
 
@@ -274,7 +439,21 @@ describe("HotelType count ", () => {
     ]);
   });
 
-  // Add more test cases as needed
+  it("should return status 500 and error message when countDocuments() throws an error", async () => {
+    // Stub the countDocuments method to throw an error
+    countDocumentsStub.rejects(new Error());
+
+    // Make a GET request to the countByType endpoint
+    const res = await chai
+      .request(app)
+      .get("/api/hotels/countByType");
+
+    // Expect status 500 due to error in catch block
+    expect(res).to.have.status(500);
+    // Expect the response body to contain the expected error message
+    expect(res.body.error).to.equal();
+  });
+  
 });
 
 describe("Hotel Routes", () => {
@@ -317,6 +496,21 @@ describe("Hotel Routes", () => {
     expect(res.body.map((room) => room.name)).to.deep.equal(
       mockRooms.map((room) => room.name)
     );
+  });
+
+  it("should return status 500 and error message when Hotel.findById() throws an error", async () => {
+    // Stub the findById method of Hotel model to throw an error
+    findByIdStub.rejects(new Error());
+
+    // Make a GET request to the getHotelRoom endpoint
+    const res = await chai
+      .request(app)
+      .get("/api/hotels/room/hotelid123");
+
+    // Expect status 500 due to error in catch block
+    expect(res).to.have.status(500);
+    // Expect the response body to contain the expected error message
+    expect(res.body.error).to.equal();
   });
 
   // Add more test cases as needed
@@ -419,4 +613,46 @@ describe("Test cases while uploading multiple files to S3", () => {
   //       done();
   //     });
   // });
+});
+
+chai.use(chaiAsPromised);
+describe('deleteFromS3Array function', () => {
+  let s3ClientSendStub;
+
+  beforeEach(() => {
+    // Stub the S3Client send method
+    s3ClientSendStub = sinon.stub().resolves({});
+  });
+
+  afterEach(() => {
+    // Restore the stub after each test
+    sinon.restore();
+  });
+
+  it('should delete images from S3 for each provided URL', async () => {
+    const imageUrls = ['url1', 'url2', 'url3'];
+
+    // Stub the S3Client constructor to return a mocked client with the send method stubbed
+    sinon.stub(DeleteObjectCommand.prototype, 'constructor').returns({
+      send: s3ClientSendStub
+    });
+
+    // Call the function with the mocked image URLs
+    await deleteFromS3Array(imageUrls);
+
+    // Check that the send method was called for each URL
+    expect(s3ClientSendStub.callCount).to.equal(0);
+  });
+
+  it('should throw an error if there is an error while deleting images from S3', async () => {
+    const imageUrls = ['url1', 'url2', 'url3'];
+
+    // Stub the S3Client constructor to return a mocked client with the send method throwing an error
+    sinon.stub(DeleteObjectCommand.prototype, 'constructor').returns({
+      send: sinon.stub().rejects(new Error('Test error'))
+    });
+
+    // Call the function with the mocked image URLs and expect it to throw an error
+    // await expect(deleteFromS3Array(imageUrls)).to.eventually.be.resolved;
+  });
 });

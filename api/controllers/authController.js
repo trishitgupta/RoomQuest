@@ -3,18 +3,18 @@ import bcrypt from "bcryptjs";
 import { createError } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
-export const testing=async(req,res,next)=>{
-  try {
-    // Sample logic to test
-    const result = 2 + 2;
+// export const testing=async(req,res,next)=>{
+//   try {
+//     // Sample logic to test
+//     const result = 2 + 2;
 
-    // Send the result as a response
-    res.status(200).json({ result });
-  } catch (error) {
-    // Handle errors
-    next(error);
-  }
-}
+//     // Send the result as a response
+//     res.status(200).json({ result });
+//   } catch (error) {
+//     // Handle errors
+//     next(error);
+//   }
+// }
 
 export const register=async(req,res,next)=>{
     console.log("Inside register");
