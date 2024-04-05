@@ -43,7 +43,7 @@ app.use(express.json());
 // app.use(express.static(buildpath));
 app.use(cors());
 // Allow requests from a specific origin
- app.use(cors({ origin: '13.234.225.74:3000' }));
+ app.use(cors({ origin: 'http://13.234.225.74:3000' }));
 
 app.use("/api/auth",authRoute);
 app.use("/api/users",usersRoute);
