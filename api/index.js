@@ -42,6 +42,8 @@ app.use(express.json());
 // const buildpath=path.join(_dirname,"../frontend/build")
 // app.use(express.static(buildpath));
 app.use(cors());
+// Allow requests from a specific origin
+ app.use(cors({ origin: '13.234.225.74:3000' }));
 
 app.use("/api/auth",authRoute);
 app.use("/api/users",usersRoute);
