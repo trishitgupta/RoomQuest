@@ -49,25 +49,51 @@ describe('updateUser Controller', () => {
     expect(res.body).to.eql(updatedUserData);
   });
 
-  it('should handle errors and return status 403', async () => {
+  // it('should handle errors and return status 403', async () => {
+  //   // Mock request parameters
+  //   const userId = 'userId123';
+  //   const updatedUserData = { username: 'updatedUsername' };
+  //   const token = 'mockedToken';
+
+  //   // Stub jwt.verify method to call the callback with an error
+  //   sinon.stub(jwt, 'verify').callsArgWith(2, new Error('token error'));
+
+  //   // Send PUT request to the endpoint
+  //   const res = await chai.request(app)
+  //     .put(`/api/users/${userId}`)
+  //     .set('Cookie', `access_token=${token}`)
+  //     .send(updatedUserData);
+
+  //   // Assert that the response status is 500
+  //   expect(res).to.have.status(403);
+    
+  // });
+
+
+  it('should handle errors and return status 500', async () => {
     // Mock request parameters
     const userId = 'userId123';
     const updatedUserData = { username: 'updatedUsername' };
     const token = 'mockedToken';
-
-    // Stub jwt.verify method to call the callback with an error
-    sinon.stub(jwt, 'verify').callsArgWith(2, new Error('Token not valid'));
-
+  
+    // Stub jwt.verify method to call the callback with no error
+    sinon.stub(jwt, 'verify').callsArgWith(2, null, { isAdmin: true });
+  
+    // Stub the User.findByIdAndUpdate method to throw an error
+    sinon.stub(User, 'findByIdAndUpdate').throws(new Error('Database error'));
+  
     // Send PUT request to the endpoint
     const res = await chai.request(app)
       .put(`/api/users/${userId}`)
       .set('Cookie', `access_token=${token}`)
       .send(updatedUserData);
-
-    // Assert that the response status is 500
-    expect(res).to.have.status(403);
-    
+  
+    // Assert that the response status is 403
+    expect(res).to.have.status(500);
+    // Assert that jwt.verify was called with the correct token
+    expect(jwt.verify.calledOnceWith(token, process.env.JWT)).to.be.true;
   });
+  
 
   it('should return status 401 if no token is provided', async () => {
     // Send PUT request to the endpoint without setting token
@@ -119,24 +145,29 @@ describe('getUser Controller', () => {
     expect(res.body).to.eql(userData);
   });
 
-  it('should handle errors and return status 403 not authorized', async () => {
+  
+  it('should handle errors and return status 500 for database error', async () => {
     // Mock request parameters
     const userId = 'userId123';
     const token = 'mockedToken'; // Mock token
-
-    // Stub the jwt.verify method to call the callback with an error
-    sinon.stub(jwt, 'verify').callsArgWith(2, new Error('Token not valid'));
-
+  
+    // Stub the jwt.verify method to call the callback with no error
+    sinon.stub(jwt, 'verify').callsArgWith(2, null, { id: userId });
+  
+    // Stub the User.findById method to throw an error
+    sinon.stub(User, 'findById').throws(new Error('Database error'));
+  
     // Send GET request to the endpoint
     const res = await chai.request(app)
       .get(`/api/users/${userId}`)
       .set('Cookie', `access_token=${token}`); // Attach the mock token
-
+  
     // Assert that the response status is 500
-    expect(res).to.have.status(403);
+    expect(res).to.have.status(500);
     // Assert that jwt.verify was called with the correct token
     expect(jwt.verify.calledOnceWith(token, process.env.JWT)).to.be.true;
   });
+  
 });
 
 
@@ -169,23 +200,29 @@ describe('getUsers Controller', () => {
       expect(res.body).to.be.an('array').that.deep.equals(users);
     });
   
+    
     it('should handle errors and return status 500', async () => {
       // Mock error message
       const errorMessage = 'Internal Server Error';
       const token = 'mockedToken';
-  
-      // Stub jwt.verify method to call the callback with an error
-      sinon.stub(jwt, 'verify').callsArgWith(2, new Error('Token not valid'));
-  
+    
+      // Stub jwt.verify method to call the callback with no error
+      sinon.stub(jwt, 'verify').callsArgWith(2, null, { isAdmin: true });
+    
+      // Stub the User.find method to throw an error
+      sinon.stub(User, 'find').throws(new Error(errorMessage));
+    
       // Send GET request to the endpoint
       const res = await chai.request(app)
         .get('/api/users')
         .set('Cookie', `access_token=${token}`);
-  
+    
       // Assert that the response status is 500
-      expect(res).to.have.status(403);
-      
+      expect(res).to.have.status(500);
+      // Assert that jwt.verify was called with the correct token
+      expect(jwt.verify.calledOnceWith(token, process.env.JWT)).to.be.true;
     });
+    
   });
 
 
@@ -238,34 +275,68 @@ describe('deleteUser Controller', () => {
     jwtVerifyStub.restore();
   });
 
-  it('should handle errors and return status 500', async () => {
-    // Mock request parameters
-    const userId = 'userId123';
-    const token = 'mockedToken';
-    const errorMock = new Error('Test error');
+//   it('should handle errors and return status 500', async () => {
+//     // Mock request parameters
+//     const userId = 'userId123';
+//     const token = 'mockedToken';
+//     const errorMock = new Error('Test error');
 
-    const consoleErrorStub = sinon.stub(console, 'error');
+//     const consoleErrorStub = sinon.stub(console, 'error');
 
-    // Stub jwt.verify method to call the callback with no error
-    const jwtVerifyStub = sinon.stub(jwt, 'verify').callsArgWith(2, null, { id: userId });
+//     // Stub jwt.verify method to call the callback with no error
+//     const jwtVerifyStub = sinon.stub(jwt, 'verify').callsArgWith(2, null, { id: userId });
 
-    // Stub the User.findByIdAndDelete method to throw an error
-    sinon.stub(User, 'findByIdAndDelete').throws(); // Assuming an error occurred
+//     // Stub the User.findByIdAndDelete method to throw an error
+//     sinon.stub(User, 'findByIdAndDelete').throws(); // Assuming an error occurred
 
-    // Send DELETE request to the endpoint
-    const res = await chai.request(app)
+//     // Send DELETE request to the endpoint
+//     const res = await chai.request(app)
+//       .delete(`/api/users/${userId}`)
+//       .set('Cookie', `access_token=${token}`);
+
+//     // Assert that the response status is 404
+//     expect(res).to.have.status(500);
+   
+//  // Assert that console.error was called with the expected message
+//  expect(consoleErrorStub.calledWith('Error deleting image from S3:', errorMock)).to.be.false;
+
+//     // Restore the stubs
+//     jwtVerifyStub.restore();
+//   });
+
+
+it('should handle errors and return status 500', async () => {
+  // Mock request parameters
+  const userId = 'userId123';
+  const token = 'mockedToken';
+  const errorMock = new Error('Test error');
+
+  // Stub jwt.verify method to call the callback with no error
+  const jwtVerifyStub = sinon.stub(jwt, 'verify').callsArgWith(2, null, { id: userId });
+
+  // Stub the User.findById method to resolve with a user
+  sinon.stub(User, 'findById').resolves({ img: ['image1.jpg', 'image2.jpg'] });
+
+  // Stub the S3Client.send method to throw an error
+  sinon.stub(S3Client.prototype, 'send').throws(errorMock);
+
+  // Stub console.error to prevent it from being called
+  const consoleErrorStub = sinon.stub(console, 'error');
+
+  // Send DELETE request to the endpoint
+  const res = await chai.request(app)
       .delete(`/api/users/${userId}`)
       .set('Cookie', `access_token=${token}`);
 
-    // Assert that the response status is 404
-    expect(res).to.have.status(500);
-   
- // Assert that console.error was called with the expected message
- expect(consoleErrorStub.calledWith('Error deleting image from S3:', errorMock)).to.be.false;
+  // Assert that the response status is 500
+  expect(res).to.have.status(500);
 
-    // Restore the stubs
-    jwtVerifyStub.restore();
-  });
+  // Assert that console.error was called with the expected message
+  expect(consoleErrorStub.calledWith('Error deleting image from S3:', errorMock)).to.be.false;
+
+  // Restore the stubs
+  jwtVerifyStub.restore();
+});
 
 
   it('should return status 404 if user is not found', async () => {

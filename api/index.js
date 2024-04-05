@@ -38,9 +38,9 @@ const connect=async()=>{
 //middleware
 app.use(cookieParser());
 app.use(express.json());
-const _dirname=path.dirname("")
-const buildpath=path.join(_dirname,"../frontend/build")
-app.use(express.static(buildpath));
+// const _dirname=path.dirname("")
+// const buildpath=path.join(_dirname,"../frontend/build")
+// app.use(express.static(buildpath));
 app.use(cors());
 
 app.use("/api/auth",authRoute);

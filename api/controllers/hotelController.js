@@ -152,6 +152,8 @@ console.log(max,min);
 
 
 
+
+
 export const countByCity = async (req, res, next) => {
   const cities = req.query.cities.split(",");
   const list = await Promise.all(
