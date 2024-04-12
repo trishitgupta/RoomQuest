@@ -71,7 +71,4 @@ app.listen(8800,()=>{
 
 
 export default app;
-<<<<<<< HEAD
-=======
-// module.exports=app;
->>>>>>> 893a9b8dd0e09828f218eaf740c09646c101633e
+
