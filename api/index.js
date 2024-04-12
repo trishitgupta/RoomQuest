@@ -39,7 +39,7 @@ const connect=async()=>{
 app.use(cookieParser());
 app.use(express.json());
 
- const _dirname=path.dirname("")
+ //const _dirname=path.dirname("")
 // const buildpath=path.join(_dirname,"../frontend/build")
 // // app.use(express.static(buildpath));
 app.use(cors());
@@ -52,6 +52,9 @@ app.use("/api/rooms",roomsRoute);
 app.use("/api/hotels",hotelsRoute);
 app.use("/api/stripe",stripeRoute)
 app.use("api/webhook",webhookRoute);
+
+const __filename = fileURLToPath(import.meta.url); 
+const __dirname = path.dirname(__filename); 
 
 app.use(express.static(path.join(__dirname, '/frontend/dist')));
 app.get('*', (req, res) => {
