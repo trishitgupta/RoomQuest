@@ -20,7 +20,7 @@
       },
 
 
-    "main": "api/index.js",
+    "main": "index.js",
     "type": "module",
     "scripts": {
         "start": "nodemon api/index.js",
