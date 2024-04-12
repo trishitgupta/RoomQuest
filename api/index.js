@@ -38,9 +38,10 @@ const connect=async()=>{
 //middleware
 app.use(cookieParser());
 app.use(express.json());
-// const _dirname=path.dirname("")
+
+ const _dirname=path.dirname("")
 // const buildpath=path.join(_dirname,"../frontend/build")
-// app.use(express.static(buildpath));
+// // app.use(express.static(buildpath));
 app.use(cors());
 // Allow requests from a specific origin
  app.use(cors({ origin: 'http://13.234.225.74:3000' }));
@@ -51,6 +52,11 @@ app.use("/api/rooms",roomsRoute);
 app.use("/api/hotels",hotelsRoute);
 app.use("/api/stripe",stripeRoute)
 app.use("api/webhook",webhookRoute);
+
+app.use(express.static(path.join(__dirname, '/frontend/dist')));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+})
 
 app.use((err, req, res, next) => {
     const errorStatus = err.status || 500;
