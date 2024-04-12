@@ -42,6 +42,8 @@ app.use(express.json());
 // const buildpath=path.join(_dirname,"../frontend/build")
 // app.use(express.static(buildpath));
 app.use(cors());
+// Allow requests from a specific origin
+ app.use(cors({ origin: 'http://13.234.225.74:3000' }));
 
 app.use("/api/auth",authRoute);
 app.use("/api/users",usersRoute);
@@ -69,3 +71,7 @@ app.listen(8800,()=>{
 
 
 export default app;
+<<<<<<< HEAD
+=======
+// module.exports=app;
+>>>>>>> 893a9b8dd0e09828f218eaf740c09646c101633e
