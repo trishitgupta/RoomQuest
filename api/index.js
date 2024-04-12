@@ -10,6 +10,7 @@ import cors from "cors";
 import stripeRoute from "./routes/stripe.js";
 import webhookRoute from "./routes/webhook.js";
 import path from "path";
+import { fileURLToPath } from 'url';
 import { GetBucketLifecycleConfigurationCommand } from '@aws-sdk/client-s3';
 
  const app=express();
