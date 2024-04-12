@@ -1,6 +1,6 @@
 import Featured from "../../components/featured/Featured";
 import FeaturedProperties from "../../components/featuredProperties/FeaturedProperties";
-import Footer from "../../components/footer/Footer";
+// import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
 
 import Navbar from "../../components/navbar/Navbar";

@@ -30,10 +30,10 @@ const typeQueryParam = type ? `&type=${type}` : '';
 const minQueryParam = min ? `&min=${min}` : '';
 const maxQueryParam = max ? `&max=${max}` : '';
 
-console.log(typeQueryParam);
-console.log(destinationQueryParam);
-console.log(minQueryParam);
-console.log(maxQueryParam);
+// console.log(typeQueryParam);
+// console.log(destinationQueryParam);
+// console.log(minQueryParam);
+// console.log(maxQueryParam);
 
 
 
