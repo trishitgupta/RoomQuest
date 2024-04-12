@@ -55,11 +55,24 @@ app.use("/api/stripe",stripeRoute)
 app.use("api/webhook",webhookRoute);
 
 const __filename = fileURLToPath(import.meta.url); 
-const __dirname = path.dirname(__filename); 
+let __dirname = path.dirname(__filename); 
+let dir=__dirname
+console.log(dir)
 
-app.use(express.static(path.join(__dirname, '/frontend/dist')));
+
+  dir = dir.replace(/\/api\/?$/, '');
+   
+
+
+
+
+
+
+
+console.log(dir)
+app.use(express.static(path.join(dir, '/frontend/build')));
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+    res.sendFile(path.join(dir, 'frontend', 'build', 'index.html'));
 })
 
 app.use((err, req, res, next) => {
